@@ -1,7 +1,0 @@
- id |        title        |                             description                              |        createdAt        |        updatedAt        
-----+---------------------+----------------------------------------------------------------------+-------------------------+-------------------------
-  1 | Refactor checkout   | Mejorar la validacion de cupones y tiempos de respuesta.             | 2026-02-19 07:26:51.187 | 2026-02-19 07:26:51.187
-  2 | Dashboard analytics | Construir panel con metricas de conversion y sesiones activas.       | 2026-02-19 07:26:51.187 | 2026-02-19 07:26:51.187
-  3 | Onboarding flow     | Reducir abandono del registro con una experiencia guiada en 3 pasos. | 2026-02-19 07:26:51.187 | 2026-02-19 07:26:51.187
-(3 rows)
-
