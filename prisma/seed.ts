@@ -1,7 +1,6 @@
-import pkg from "@prisma/client";
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-
-const { PrismaClient } = pkg;
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -40,7 +39,8 @@ async function main() {
     },
     {
       title: "Mobile App",
-      description: "Desarrollar versión nativa para iOS y Android usando React Native.",
+      description:
+        "Desarrollar versión nativa para iOS y Android usando React Native.",
     },
     {
       title: "API Rate Limiting",
@@ -49,15 +49,20 @@ async function main() {
     },
     {
       title: "Dark Mode Support",
-      description: "Agregar tema oscuro con sincronización de preferencias del usuario.",
+      description:
+        "Agregar tema oscuro con sincronización de preferencias del usuario.",
     },
   ];
 
-  await prisma.project.createMany({
+  // Limpiar proyectos existentes primero (opcional)
+  await prisma.project.deleteMany({});
+
+  // Crear nuevos proyectos
+  const created = await prisma.project.createMany({
     data: projects,
   });
 
-  console.log("✅ Seed completado: Se crearon", projects.length, "proyectos");
+  console.log("✅ Seed completado: Se crearon", created.count, "proyectos");
 }
 
 main()
@@ -65,7 +70,7 @@ main()
     await prisma.$disconnect();
   })
   .catch(async (error) => {
-    console.error(error);
+    console.error("❌ Error en seed:", error);
     await prisma.$disconnect();
     process.exit(1);
   });

@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 interface ProjectCardProps {
+  id: number;
   title: string;
   description: string;
   createdAt: Date;
@@ -17,6 +20,8 @@ function formatDate(date: Date): string {
 
 export default function ProjectCard(project: ProjectCardProps) {
   return (
+    <div className="flex">
+
     <article className="bg-gray-700 p-4 rounded mb-4">
       <h2 className="text-xl font-bold">{project.title}</h2>
       <p className="text-gray-300">{project.description}</p>
@@ -25,5 +30,9 @@ export default function ProjectCard(project: ProjectCardProps) {
         {formatDate(project.updatedAt)}
       </p>
     </article>
+    <Link href={`/dashboard/${project.id}`} className="ml-4 self-start px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+      Ver detalles
+    </Link>
+    </div>
   );
 }

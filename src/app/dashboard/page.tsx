@@ -1,12 +1,13 @@
-import ProjectForm from "@/components/forms/ProjectForm";
+// import ProjectForm from "@/components/forms/ProjectForm";
+import ProjectOptimisticForm from "@/components/forms/ProjectOptimisticForm";
 import ProjectCard from "@/components/ProjectCard";
 import { getProjects } from "@/lib/projects";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const projects = await getProjects();
+  const projects = await getProjects({ order: "asc" });
 
   return (
     <div>
@@ -19,12 +20,14 @@ export default async function DashboardPage() {
         Ir al formulario
       </Link>
 
-      <ProjectForm />
+      {/* <ProjectForm /> */}
+      <ProjectOptimisticForm />
 
       <div className="mt-6">
         {projects.map((project) => (
           <ProjectCard
             key={project.id}
+            id={project.id}
             title={project.title}
             description={project.description}
             createdAt={project.createdAt}
