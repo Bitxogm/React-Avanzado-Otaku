@@ -1,5 +1,6 @@
 import pkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import readline from "readline";
 
 const { PrismaClient } = pkg;
 
@@ -11,6 +12,20 @@ if (!connectionString) {
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
+
+function askConfirmation(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === "s" || answer.toLowerCase() === "y");
+    });
+  });
+}
 
 async function main() {
   const projects = [
@@ -53,11 +68,26 @@ async function main() {
     },
   ];
 
-  await prisma.project.createMany({
+  // Preguntar confirmación antes de limpiar
+  const confirm = await askConfirmation(
+    "⚠️  Esto borrará todos los proyectos existentes. ¿Deseas continuar? (s/n): "
+  );
+
+  if (!confirm) {
+    console.log("❌ Operación cancelada");
+    return;
+  }
+
+  // Limpiar proyectos existentes
+  const deleted = await prisma.project.deleteMany({});
+  console.log(`🗑️  Se borraron ${deleted.count} proyectos`);
+
+  // Crear nuevos proyectos
+  const created = await prisma.project.createMany({
     data: projects,
   });
 
-  console.log("✅ Seed completado: Se crearon", projects.length, "proyectos");
+  console.log("✅ Seed completado: Se crearon", created.count, "proyectos");
 }
 
 main()

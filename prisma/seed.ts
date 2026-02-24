@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import * as readline from "readline";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -10,6 +11,20 @@ if (!connectionString) {
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
+
+function askConfirmation(question: string): Promise<boolean> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === "s" || answer.toLowerCase() === "y");
+    });
+  });
+}
 
 async function main() {
   const projects = [
@@ -54,8 +69,19 @@ async function main() {
     },
   ];
 
-  // Limpiar proyectos existentes primero (opcional)
-  await prisma.project.deleteMany({});
+  // Preguntar confirmación antes de limpiar
+  const confirm = await askConfirmation(
+    "⚠️  Esto borrará todos los proyectos existentes. ¿Deseas continuar? (s/n): ",
+  );
+
+  if (!confirm) {
+    console.log("❌ Operación cancelada");
+    return;
+  }
+
+  // Limpiar proyectos existentes
+  const deleted = await prisma.project.deleteMany({});
+  console.log(`🗑️  Se borraron ${deleted.count} proyectos`);
 
   // Crear nuevos proyectos
   const created = await prisma.project.createMany({

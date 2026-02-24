@@ -2,12 +2,27 @@
 import ProjectOptimisticForm from "@/components/forms/ProjectOptimisticForm";
 import ProjectCard from "@/components/ProjectCard";
 import { getProjects } from "@/lib/projects";
+import { Metadata } from "next";
 import Link from "next/link";
 
 // export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
-  const projects = await getProjects({ order: "asc" });
+type SearchParamValue = string | string[] | undefined;
+
+type DashboardPageSearchParams = Promise<Record<string, SearchParamValue>>;
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Dashboard de proyectos",
+};
+
+export default async function DashboardPage(props: { params: Promise<Record<string, string>>, searchParams: DashboardPageSearchParams }) {
+  const searchParams = await props.searchParams;
+
+  console.log("Search params:", searchParams);
+
+  const order = searchParams.sort === "desc" ? "desc" : "asc";
+  const projects = await getProjects({ order });
 
   return (
     <div>
