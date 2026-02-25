@@ -1,18 +1,30 @@
+# Archivo Docker Compose para levantar rápida y fácilmente la Base de Datos en tu ordenador
 name: react-avanzado-otaku
 
 services:
+  # Definimos un servicio llamado "postgres"
   postgres:
+    # Usamos la imagen oficial de PostgreSQL versión 16 desde Docker Hub
     image: postgres:16
     container_name: react-avanzado-otaku-postgres
+    # unless-stopped hace que la base de datos se intente iniciar sola si reinicias tu ordenador
     restart: unless-stopped
+    
+    # Variables de entorno que configuran el usuario, contraseña y nombre inicial de la DB
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nextjs_db
+      
+    # Mapeo de puertos: "Puerto_De_Tu_PC:Puerto_Interno_Del_Contenedor"
+    # El 5434 de tu PC apuntará al 5432 original de postgresql
     ports:
       - "5434:5432"
+      
+    # Volumes: Persistencia de datos. Hace que si borras el contenedor, no pierdas la información guardada.
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+# Declaramos el volumen persistente usado arriba
 volumes:
   postgres_data:

@@ -3,13 +3,19 @@ import { getProjectById, getProjects } from "@/lib/projects";
 import { ProjectDto } from "@/lib/projects.types";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic"; Fuerza a Next.js a renderizar esta página en el servidor en cada petición, desactivando la generación estática.
 
+// Definimos el tipo de los parámetros dinámicos de la URL (el "[id]" de la carpeta)
 type ProjectDetailParams = Promise<{
   id: string;
 }>;
 
-// Se ejecuta en build time
+/**
+ * generateStaticParams se ejecuta durante el "build time" (cuando haces npm run build).
+ * Sirve para decirle a Next.js qué IDs de proyectos existen de antemano.
+ * Así, Next.js puede pre-renderizar estáticamente todas las páginas de detalles de proyectos.
+ * Es excelente para el rendimiento (Static Site Generation - SSG).
+ */
 export async function generateStaticParams() {
   const projects = await getProjects({ order: "asc" });
 
@@ -18,13 +24,19 @@ export async function generateStaticParams() {
   }));
 }
 
+/**
+ * generateMetadata permite generar las etiquetas <title> y <meta> dinámicamente
+ * dependiendo del proyecto que estemos viendo (útil para SEO cuando se comparte el enlace a alguien).
+ */
 export async function generateMetadata(props: {
   params: ProjectDetailParams;
 }): Promise<Metadata> {
   const { id } = await props.params;
 
+  // Buscamos el proyecto en la base de datos
   const project = await getProjectById(Number(id));
 
+  // Retornamos el título del proyecto o un texto por defecto si no existe
   return {
     title: project ? `Proyecto: ${project.title}` : "Proyecto no encontrado",
     description: project
@@ -33,20 +45,27 @@ export async function generateMetadata(props: {
   };
 }
 
+/**
+ * ProjectDetail es un Server Component que representa la página de detalles de un solo proyecto.
+ * La carpeta "[id]" indica que es una ruta dinámica (ej: /dashboard/1, /dashboard/25).
+ */
 export default async function ProjectDetail(props: {
   params: ProjectDetailParams;
 }) {
+  // Extraemos el ID dinámico de la URL
   const { id } = await props.params;
 
   console.log("ID del proyecto:", id);
 
   let project: ProjectDto | null = null;
   try {
+    // Obtenemos los detalles únicos de este proyecto por su ID particular
     project = await getProjectById(Number(id));
   } catch {
     console.error(`[ProjectDetail] Error al obtener el proyecto con ID ${id}`);
   }
 
+  // Manejo básico de error si alguien entra a /dashboard/9999 y no existe
   if (!project) {
     return <p>Proyecto no encontrado</p>;
   }
@@ -56,6 +75,7 @@ export default async function ProjectDetail(props: {
       <h2 className="text-xl font-bold mb-2">{project.title}</h2>
       <p>{project.description}</p>
       <div>
+        {/* Usamos un Client Component para manejar la interactividad del botón de "Me gusta" */}
         <OptimisticLikeButton
           initialLikes={project.likes}
           projectId={project.id}

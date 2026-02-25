@@ -1,47 +1,97 @@
-# React Avanzado 19 - Módulo 10
+# Proyecto React Avanzado - Fullstack App (Next.js)
 
-Repositorio del módulo 10 de React Avanzado en KeepCoding, centrado en Next.js y el enfoque Server First.
+Bienvenido aplicacion Fullstack básica construida con **Next.js (App Router)** y **PostgreSQL**. Contiene ejemplos sobre Server Components, Server Actions, Formularios con UI Optimista y protección de rutas usando middleware.
 
-## Sobre mí
+---
 
-Soy Alex Martínez, desarrollador Full-Stack, y en este repositorio voy documentando y construyendo los ejercicios y entregas del módulo.
+## 🚀 Guía Rápida para Levantar el Proyecto
 
-## Qué se trabaja en React Avanzado (Módulo 10)
+Sigue estos pasos en orden para iniciar la aplicación desde cero.
 
-El módulo recorre 6 bloques prácticos:
+### 1. Requisitos Previos
 
-1. RSC y arquitectura con App Router.
-2. Fetching de datos y Streaming.
-3. Mutaciones con Server Actions.
-4. Formularios y UX avanzada (`useActionState`, `useOptimistic`).
-5. Control de errores y seguridad (`error.tsx`, `not-found.tsx`, validación y middleware).
-6. Testing y calidad en producción (unit testing de Server Actions, límites serverless y despliegue).
+- **Node.js**: Instalado (recomendado v18+).
+- **pnpm**: Gestor de paquetes (`npm install -g pnpm`).
+- **Docker** o **Docker Desktop**: Para levantar la base de datos fácilmente.
 
-Idea central del módulo: mover la lógica pesada al servidor y dejar el cliente para interactividad puntual.
+### 2. Levantar la Base de Datos (Docker)
 
-## Contenido del repositorio
+El proyecto incluye un entorno pre-configurado para levantar PostgreSQL localmente.
 
-Estructura actual y objetivo de organización:
+```bash
+cd setup-db
+docker-compose up -d
+```
+*Esto levantará un contenedor postgres:16 en el puerto 5434 de tu equipo.*
 
-```text
-.
-├── docs/.                 # presentación oficial del módulo y enunciado de práctica
-│   ├── React Avanzado.pdf
-│   └── Práctica Next.js Marketplace de Anuncios.pdf
-├── setup-db/               # entorno local de BD (Docker + PostgreSQL) y guía Prisma
-│   ├── docker-compose.yml
-│   └── README.md
-└── src/                    # contenido de clases en curso
+### 3. Configurar Variables de Entorno
+
+Crea un archivo `.env` en la estructura raíz del proyecto (junto a `package.json`) y pega la variable correcta para conectarte a la BD Dockerizada:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5434/nextjs_db?schema=public"
 ```
 
-## Práctica a completar durante estas semanas
+### 4. Instalar Dependencias
 
-En el enunciado de la práctica `docs/Práctica Next.js Marketplace de Anuncios.pdf`, la entrega es una app Fullstack tipo marketplace en Next.js (App Router) con estos mínimos:
+Regresa a la raíz de tu proyecto e instala todo:
 
-1. Listado de anuncios en servidor (sin `useEffect` para carga inicial), filtros por URL y `loading.js` para Streaming.
-2. Detalle dinámico en `/ads/[id]` con `generateMetadata` para SEO básico.
-3. Login y creación de anuncios con Server Actions, validación en servidor y `revalidatePath`.
-4. Manejo de errores con `not-found.js` y `error.js`.
-5. Testing: al menos 1 test unitario de una Server Action.
+```bash
+pnpm install
+```
 
-Extras para nota máxima: proteger `/ads/create` con middleware, implementar Optimistic UI y demostrar buena separación Server/Client Components.
+### 5. Configurar Prisma (ORM)
+
+Prisma es la herramienta que se comunica con nuestra base de datos. Debes mandar los "planos" (esquemas) a la DB recién creada.
+
+1. **Sincronizar la base de datos** (Crea las tablas):
+   ```bash
+   pnpm dlx prisma db push
+   ```
+2. **Generar el cliente de TypeScript**:
+   ```bash
+   pnpm dlx prisma generate
+   ```
+3. **Poblar la base de datos (Opcional - Seed)**:
+   *Carga proyectos de ejemplo automáticamente.*
+   ```bash
+   node prisma/seed.mjs
+   ```
+
+---
+
+## 💻 Entorno de Desarrollo (Local)
+
+Para revisar el código en vivo, con Hot-Reloading y reportes de error interactivos, levanta el entorno de desarrollo:
+
+```bash
+pnpm run dev
+```
+👉 Tu aplicación estará corriendo en [http://localhost:3000](http://localhost:3000).
+
+*Si quieres ver la Base de Datos directamente como un panel de Excel, abre otra terminal y pon `pnpm dlx prisma studio`.*
+
+---
+
+## 🏗 Entorno de Producción
+
+Para simular exactamente cómo correrá la aplicación en un servidor real público, necesitas "Construir" (Build) la aplicación, que minificará el código y prerenderizará las páginas estáticas.
+
+1. **Construir el código**:
+   ```bash
+   pnpm run build
+   ```
+2. **Iniciar el servidor ultra-rápido de prod**:
+   ```bash
+   pnpm run start
+   ```
+
+---
+
+## 🗂 Estructura del Proyecto Recomendada
+
+- `/src/app`: Rutas del sistema (App Router), páginas y layouts. (Ej. `/dashboard`). Backend y Frontend se cruzan aquí.
+- `/src/components`: Botones visuales, Formularios interactivos y componentes reutilizables sin lógica de ruteaje.
+- `/src/lib`: Utilidades o lógica puramente de backend como configuraciones a Prisma, o llamadas a APIs.
+- `/prisma`: La magia de base de datos. Modelos (`schema.prisma`) y _scripts_ de _seeding_.
+- `/schemas`: Zod Types para validar los formularios evitando intrusiones maliciosas de usuarios antes de guardar.

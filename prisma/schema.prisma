@@ -1,16 +1,34 @@
+// Este es el archivo principal de configuración de Prisma
+// Aquí defines la conexión a tu base de datos y la estructura de tus tablas (Modelos)
+
+// El "generator" le dice a Prisma en qué lenguaje quieres que genere el código del cliente.
+// En este caso, genera TypeScript/JavaScript para que lo usemos en nuestro código.
 generator client {
   provider = "prisma-client-js"
 }
 
+// El "datasource" indica el tipo de base de datos que estamos usando y de dónde sacar la URL de conexión.
 datasource db {
   provider = "postgresql"
+  // Nota: La URL real se recoge del archivo .env a través de la variable DATABASE_URL
 }
 
+// El "model" representa una tabla en tu base de datos PostgreSQL.
+// Cada propiedad será una columna en esa tabla.
 model Project {
+  // @id indica que esta es la Clave Primaria (Primary Key).
+  // @default(autoincrement()) hace que el ID numérico se asigne solo progresivamente (1, 2, 3...)
   id          Int      @id @default(autoincrement())
+  
   title       String
   description String
+  
+  // @default(0) hace que si no le pasamos los 'likes' al crear, empiece en cero.
   likes       Int      @default(0)
+  
+  // @default(now()) guarda la fecha y hora exacta en la que se crea la fila.
   createdAt   DateTime @default(now())
+  
+  // @updatedAt es "mágico": Prisma lo actualizará solo cada vez que modifiques esta fila.
   updatedAt   DateTime @updatedAt
 }

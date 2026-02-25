@@ -1,18 +1,24 @@
+/**
+ * SCRIPT DE SEEDING (Población de datos)
+ * Se encarga de llenar la Base de Datos vacía con información útil inicial (mock data)
+ * para que no tengas que crear proyectos manualmente al iniciar la aplicación.
+ */
 import pkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import readline from "readline";
 
 const { PrismaClient } = pkg;
 
+// Al ser un script externo suelto (no ejecutado por Next.js), cargamos la variable manualmente
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
+// Configuración de Prisma igual que en el entorno normal (ver src/lib/prisma.ts)
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
-
 function askConfirmation(question) {
   const rl = readline.createInterface({
     input: process.stdin,
