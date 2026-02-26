@@ -1,9 +1,10 @@
 import OptimisticLikeButton from "@/components/buttons/optimistic-like-button";
 import { getProjectById, getProjects } from "@/lib/projects";
-import { ProjectDto } from "@/lib/projects.types";
+// import { ProjectDto } from "@/lib/projects.types";
 import { Metadata } from "next";
 
-// export const dynamic = "force-dynamic"; Fuerza a Next.js a renderizar esta página en el servidor en cada petición, desactivando la generación estática.
+//  Fuerza a Next.js a renderizar esta página en el servidor en cada petición, desactivando la generación estática.
+export const dynamic = "force-dynamic";
 
 // Definimos el tipo de los parámetros dinámicos de la URL (el "[id]" de la carpeta)
 type ProjectDetailParams = Promise<{
@@ -33,8 +34,14 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const { id } = await props.params;
 
+  // Validar que el ID sea un número válido
+  const numericId = Number(id);
+  if (isNaN(numericId)) {
+    throw new Error(`ID de proyecto inválido: ${id}`);
+  }
+
   // Buscamos el proyecto en la base de datos
-  const project = await getProjectById(Number(id));
+  const project = await getProjectById(numericId);
 
   // Retornamos el título del proyecto o un texto por defecto si no existe
   return {
@@ -57,17 +64,18 @@ export default async function ProjectDetail(props: {
 
   console.log("ID del proyecto:", id);
 
-  let project: ProjectDto | null = null;
-  try {
-    // Obtenemos los detalles únicos de este proyecto por su ID particular
-    project = await getProjectById(Number(id));
-  } catch {
-    console.error(`[ProjectDetail] Error al obtener el proyecto con ID ${id}`);
+  // Validar que el ID sea un número válido
+  const numericId = Number(id);
+  if (isNaN(numericId)) {
+    throw new Error(`ID de proyecto inválido: ${id}`);
   }
+
+  // Obtenemos los detalles únicos de este proyecto por su ID particular
+  const project = await getProjectById(numericId);
 
   // Manejo básico de error si alguien entra a /dashboard/9999 y no existe
   if (!project) {
-    return <p>Proyecto no encontrado</p>;
+    throw new Error(`Proyecto con ID ${numericId} no encontrado`);
   }
 
   return (

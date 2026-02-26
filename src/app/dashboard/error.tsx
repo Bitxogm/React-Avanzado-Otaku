@@ -3,11 +3,6 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-/**
- * COMPONENTE DE ERROR RAÍZ DEL APP ROUTER
- * Este error boundary atrapa errores en la raíz del app router.
- * Es la segunda línea de defensa (después de global-error.tsx).
- */
 export default function Error({
   error,
   reset,
@@ -16,7 +11,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(`[app/error]`, error);
+    console.error(`[${error.digest ?? "dashboard/error"}] detalles:`, error);
   }, [error]);
 
   return (
@@ -30,7 +25,7 @@ export default function Error({
         </div>
 
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-          ¡Algo salió mal en la aplicación!
+          ¡Algo salió mal!
         </h2>
 
         <p className="text-lg text-gray-600 dark:text-gray-400 wrap-break-word">
@@ -46,15 +41,15 @@ export default function Error({
         <div className="pt-6 flex gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-200"
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-200"
           >
             Intentar de nuevo
           </button>
           <Link
-            href="/"
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 px-8 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-500  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 transition-all duration-200"
+            href="/dashboard"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 px-8 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-gray-600 transition-all duration-200"
           >
-            Ir a Home
+            Volver al Dashboard
           </Link>
         </div>
       </div>

@@ -9,7 +9,9 @@ import { getProjects } from "@/lib/projects";
 import { Metadata } from "next";
 import Link from "next/link"; // Componente Link de Next.js que optimiza la navegación entre páginas (precarga)
 
-// Opcional: export const dynamic = "force-dynamic"; obliga a que la página se renderice en cada petición, sin usar caché.
+// ISR (Incremental Static Regeneration): Fuerza renderizado estático + regenera cada 10 segundos
+export const dynamic = 'force-static';
+export const revalidate = 10;
 
 // Tipos para los parámetros de búsqueda de la URL (querystrings como ?sort=desc)
 type SearchParamValue = string | string[] | undefined;

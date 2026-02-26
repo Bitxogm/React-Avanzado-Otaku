@@ -5,6 +5,8 @@
  */
 "use client";
 
+export const dynamic = 'force-static';
+
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {

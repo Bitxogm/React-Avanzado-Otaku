@@ -1,5 +1,7 @@
 import { helloAction } from "./actions";
 
+export const dynamic = 'force-static';
+
 /**
  * FormPage es un Server Component básico que renderiza un formulario de pruebas.
  * Demuestra "Progressive Enhancement": cómo Next.js maneja formularios nativos sin JavaScript de cliente
