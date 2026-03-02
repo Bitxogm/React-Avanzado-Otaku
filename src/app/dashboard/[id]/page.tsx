@@ -1,5 +1,6 @@
 import OptimisticLikeButton from "@/components/buttons/optimistic-like-button";
 import { getProjectById, getProjects } from "@/lib/projects";
+import { getSession } from "@/lib/auth";
 // import { ProjectDto } from "@/lib/projects.types";
 import { Metadata } from "next";
 
@@ -59,6 +60,12 @@ export async function generateMetadata(props: {
 export default async function ProjectDetail(props: {
   params: ProjectDetailParams;
 }) {
+  // Obtener la sesión del usuario
+  const session = await getSession();
+  if (!session) {
+    return <div>No estás autenticado</div>;
+  }
+
   // Extraemos el ID dinámico de la URL
   const { id } = await props.params;
 
@@ -76,6 +83,11 @@ export default async function ProjectDetail(props: {
   // Manejo básico de error si alguien entra a /dashboard/9999 y no existe
   if (!project) {
     throw new Error(`Proyecto con ID ${numericId} no encontrado`);
+  }
+
+  // Verificar que el proyecto pertenece al usuario actual
+  if (project.userId !== session.userId) {
+    throw new Error(`No tienes permiso para ver este proyecto`);
   }
 
   return (

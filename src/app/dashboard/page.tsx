@@ -5,13 +5,13 @@ import ProjectCard from "@/components/ProjectCard";
 
 // Funciones para consultas a la base de datos (se ejecutan en el servidor por defecto en el App Router)
 import { getProjects } from "@/lib/projects";
+import { getSession } from "@/lib/auth";
 
 import { Metadata } from "next";
 import Link from "next/link"; // Componente Link de Next.js que optimiza la navegación entre páginas (precarga)
 
 // ISR (Incremental Static Regeneration): Fuerza renderizado estático + regenera cada 10 segundos
-export const dynamic = 'force-static';
-export const revalidate = 10;
+export const dynamic = 'force-dynamic';
 
 // Tipos para los parámetros de búsqueda de la URL (querystrings como ?sort=desc)
 type SearchParamValue = string | string[] | undefined;
@@ -32,18 +32,27 @@ export const metadata: Metadata = {
  * y luego envía solo el HTML resultante al Navegador del usuario, sin enviar el JavaScript de este componente.
  */
 export default async function DashboardPage(props: { params: Promise<Record<string, string>>, searchParams: DashboardPageSearchParams }) {
-  // Esperamos a que los searchParams (los parámetros de la URL) estén listos
+  console.log("\n[Dashboard] ===== RENDERIZANDO DASHBOARD =====");
+
   const searchParams = await props.searchParams;
+  console.log("[Dashboard] Search params:", searchParams);
 
-  // ¡OJO! Este console.log NO se verá en la consola del navegador. Se verá en la terminal del servidor.
-  console.log("Search params:", searchParams);
+  // Obtener la sesión del usuario
+  console.log("[Dashboard] Verificando sesión...");
+  const session = await getSession();
 
-  // Leemos el parámetro 'sort' de la URL para decidir el orden (ej. /dashboard?sort=desc)
+  if (!session) {
+    console.log("[Dashboard] ❌ No hay sesión, usuario no autenticado");
+    return <div>No estás autenticado</div>;
+  }
+
+  console.log("[Dashboard] ✅ Sesión válida, userId:", session.userId);
+
   const order = searchParams.sort === "desc" ? "desc" : "asc";
+  console.log("[Dashboard] Obteniendo proyectos con orden:", order);
 
-  // Llamamos directamente a nuestra función de base de datos sin necesidad de crear una API externa (como /api/projects)
-  // Esto es posible y completamente seguro porque este código corre en el servidor.
-  const projects = await getProjects({ order });
+  const projects = await getProjects({ order, userId: session.userId });
+  console.log("[Dashboard] Proyectos obtenidos:", projects.length);
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import * as readline from "readline";
+import { createHash } from "crypto";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -12,21 +12,39 @@ if (!connectionString) {
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
-function askConfirmation(question: string): Promise<boolean> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      rl.close();
-      resolve(answer.toLowerCase() === "s" || answer.toLowerCase() === "y");
-    });
-  });
+function hashPassword(password: string): string {
+  return createHash("sha256").update(password).digest("hex");
 }
 
 async function main() {
+  // Limpiar usuarios existentes
+  await prisma.user.deleteMany({});
+  console.log("🗑️  Usuarios eliminados");
+
+  // Crear usuarios de prueba
+  const testUsers = [
+    {
+      email: "admin@marketplace.com",
+      password: hashPassword("1234"),
+      name: "Admin User",
+    },
+    {
+      email: "user@marketplace.com",
+      password: hashPassword("password123"),
+      name: "Test User",
+    },
+  ];
+
+  // Crear nuevos usuarios y obtener el primer ID
+  let adminUserId = "";
+  for (const userData of testUsers) {
+    const newUser = await prisma.user.create({ data: userData });
+    if (!adminUserId) {
+      adminUserId = newUser.id;
+    }
+    console.log(`✅ Usuario creado: ${userData.email}`);
+  }
+
   const projects = [
     {
       title: "Refactor checkout",
@@ -69,26 +87,23 @@ async function main() {
     },
   ];
 
-  // Preguntar confirmación antes de limpiar
-  const confirm = await askConfirmation(
-    "⚠️  Esto borrará todos los proyectos existentes. ¿Deseas continuar? (s/n): ",
-  );
-
-  if (!confirm) {
-    console.log("❌ Operación cancelada");
-    return;
-  }
-
   // Limpiar proyectos existentes
   const deleted = await prisma.project.deleteMany({});
   console.log(`🗑️  Se borraron ${deleted.count} proyectos`);
 
-  // Crear nuevos proyectos
-  const created = await prisma.project.createMany({
-    data: projects,
-  });
+  // Crear nuevos proyectos con userId
+  let projectCount = 0;
+  for (const projectData of projects) {
+    await prisma.project.create({
+      data: {
+        ...projectData,
+        userId: adminUserId,
+      },
+    });
+    projectCount++;
+  }
 
-  console.log("✅ Seed completado: Se crearon", created.count, "proyectos");
+  console.log(`✅ Seed completado: Se crearon ${projectCount} proyectos`);
 }
 
 main()

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DeleteProjectButton from "./buttons/delete-project-button";
 
 /**
  * Interfaz que define las propiedades (props) que espera recibir este componente.
@@ -48,6 +49,7 @@ export default function ProjectCard(project: ProjectCardProps) {
       <Link href={`/dashboard/${project.id}`} className="ml-4 self-center px-4 py-2 bg-blue-600 font-bold text-white rounded hover:bg-blue-700 transition-colors shadow hover:shadow-lg active:scale-95">
         Ver detalles
       </Link>
+      <DeleteProjectButton projectId={project.id} />
     </div>
   );
 }

@@ -56,6 +56,7 @@ describe("Hito 5: Unit Testing - createProjectOptimisticAction", () => {
       likes: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+      userId: ""
     });
 
     // 2. Act: Ejecutamos la Server Action

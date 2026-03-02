@@ -7,18 +7,21 @@
  */
 "use server";
 
-import { createProject } from "@/lib/projects";
-// revalidatePath es clave en Next.js. Permite purgar o limpiar la caché de una ruta específica
-// para que Next.js actualice los datos que muestra en pantalla tras un cambio
 import { revalidatePath } from "next/cache";
 import { z } from "zod"; // Zod es una librería muy popular para validar esquemas de datos
-import { createProjectSchema } from '../../../schemas/project.schema';
+
+import { createProject, deleteProject } from "@/lib/projects";
+
+// revalidatePath es clave en Next.js. Permite purgar o limpiar la caché de una ruta específica
+// para que Next.js actualice los datos que muestra en pantalla tras un cambio
+import { createProjectSchema } from "../../../schemas/project.schema";
+import { getSession } from "@/lib/auth";
 
 // Esta interfaz define un molde para la respuesta estándar de nuestras Server Actions
 export interface ProjectActionResult {
-  success: boolean;       // Indica si la acción fue exitosa o falló
-  message: string;        // Mensaje de feedback para el usuario
-  requestId: number;      // Un identificador único (aquí usamos Date.now())
+  success: boolean; // Indica si la acción fue exitosa o falló
+  message: string; // Mensaje de feedback para el usuario
+  requestId: number; // Un identificador único (aquí usamos Date.now())
   errors?: Record<string, string[]>; // Mapa de posibles errores de validación
 }
 
@@ -31,6 +34,16 @@ export async function createProjectAction(
   _previousState: ProjectActionResult, // Estado que devolvió la acción en la llamada anterior
   formData: FormData, // Los datos enviados a través de un <form> HTML estándar
 ): Promise<ProjectActionResult> {
+  // Obtener la sesión del usuario
+  const session = await getSession();
+  if (!session) {
+    return {
+      success: false,
+      message: "Debes estar autenticado para crear un proyecto",
+      requestId: Date.now(),
+    };
+  }
+
   // Extraemos el campo title del formulario
   const title = String(formData.get("title")).trim();
 
@@ -45,7 +58,7 @@ export async function createProjectAction(
 
   try {
     // Si todo es correcto, guardamos el proyecto en la base de datos
-    const newProject = await createProject(title);
+    const newProject = await createProject(title, session.userId);
 
     // Este log saldrá en tu terminal de backend, no en el Google Chrome
     console.log("Nuevo proyecto creado:", newProject);
@@ -98,6 +111,16 @@ export async function createProjectOptimisticAction(
   _previousState: ProjectActionResult,
   formData: FormData,
 ): Promise<ProjectActionResult> {
+  // Obtener la sesión del usuario
+  const session = await getSession();
+  if (!session) {
+    return {
+      success: false,
+      message: "Debes estar autenticado para crear un proyecto",
+      requestId: Date.now(),
+    };
+  }
+
   // Verificamos de forma segura (*safeParse*) que los datos coincidan con nuestras reglas de Zod
   const validatedFields = createProjectSchema.safeParse({
     title: formData.get("title"),
@@ -120,6 +143,7 @@ export async function createProjectOptimisticAction(
     const newProjectData = validatedFields.data;
     const newProject = await createProject(
       newProjectData.title,
+      session.userId,
       newProjectData.description,
     );
     console.log("Nuevo proyecto creado:", newProject);
@@ -140,4 +164,24 @@ export async function createProjectOptimisticAction(
       requestId: Date.now(),
     };
   }
+}
+
+export async function deleteProjectAction(formData: FormData) {
+  const projectId = Number(formData.get("projectId"));
+
+  // Verificar sesión
+  const session = await getSession();
+
+  if (!session) {
+    throw new Error("Usuario no logueado");
+  }
+
+  // Verificar que pertenece al usuario
+  const success = await deleteProject(projectId, session.userId);
+
+  if (!success) {
+    throw new Error("No tienes permisos para borrar el proyecto");
+  }
+
+  revalidatePath("/dashboard");
 }

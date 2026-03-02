@@ -1,0 +1,135 @@
+
+> app@0.1.0 dev /home/otaku1944/Desktop/react-avanzado-otaku
+> next dev
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.10:3001
+- Environments: .env
+
+✓ Starting...
+✓ Ready in 842ms
+Search params: {}
+[auth] getSession - No token found
+ GET /dashboard 200 in 539ms (compile: 269ms, render: 270ms)
+Search params: {}
+[auth] getSession - No token found
+ GET /dashboard 200 in 19ms (compile: 2ms, render: 17ms)
+ GET /login 200 in 68ms (compile: 44ms, render: 24ms)
+Persisting failed: Failed to compact database
+
+Caused by:
+    0: Failed to deserialize used key hashes AMQF from 00001718.meta
+    1: incompatible version
+[createSession] Token created: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbW0zc2FocjQwM...
+[createSession] Cookie saved successfully
+Search params: {}
+[auth] getSession - No token found
+ GET /dashboard 200 in 35ms (compile: 2ms, render: 33ms)
+ POST /login 303 in 176ms (compile: 2ms, render: 174ms)
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 302012708 out of range for slice of length 143928
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 302012708 out of range for slice of length 143928
+
+thread 'tokio-runtime-worker' (149754) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 2938008767 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149653) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149654) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149654) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149772) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 24836884 out of range for slice of length 143928
+
+thread 'tokio-runtime-worker' (149651) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 24836884 out of range for slice of length 143928
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 24836884 out of range for slice of length 143928
+
+thread 'tokio-runtime-worker' (149651) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 24836884 out of range for slice of length 143928
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149651) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149657) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149658) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 2938008767 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149754) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149754) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149659) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149777) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149651) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149652) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149659) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149653) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149772) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+
+thread 'tokio-runtime-worker' (149653) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 34732843 out of range for slice of length 454039
+ GET / 200 in 59ms (compile: 14ms, render: 44ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET / 200 in 14ms (compile: 1610µs, render: 12ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (149772) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:411:46:
+range start index 601001756 out of range for slice of length 454039
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
