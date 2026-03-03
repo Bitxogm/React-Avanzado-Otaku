@@ -40,13 +40,13 @@ function getInputClassName(hasError: boolean) {
 export default function LoginForm({ from }: LoginFormProps) {
   // Router para redirigir al dashboard después del login exitoso
   const router = useRouter();
-  
+
   // useActionState vincula el formulario con la Server Action del backend
   const [state, formAction] = useActionState(loginAction, initialLoginState);
-  
+
   // Estado local para el campo de contraseña
   const [password, setPassword] = useState("");
-  
+
   // Fallback por si state es null (caso muy raro)
   const safeState = state ?? initialLoginState;
 

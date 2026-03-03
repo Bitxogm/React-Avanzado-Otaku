@@ -7,9 +7,25 @@ import { Project } from "@prisma/client";
 import prisma from "./prisma"; // Importamos el cliente que configuramos en prisma.ts
 import { ProjectDto } from "./projects.types";
 
+/**
+ * Interfaz que define los parámetros de filtrado y paginación para proyectos.
+ */
 interface ProjectFilter {
   order: "asc" | "desc"; // Forzamos por TypeScript a que el orden sea limitado a "asc" o "desc"
   userId?: string; // Opcional: si no se proporciona, devuelve todos los proyectos
+  query?: string; // Búsqueda por título o descripción
+  page?: number; // Número de página (comienza en 1)
+  pageSize?: number; // Cantidad de proyectos por página
+}
+
+/**
+ * Interfaz que define la estructura de respuesta paginada de proyectos.
+ */
+interface PaginatedProjectsResult {
+  items: Project[];
+  totalPages: number;
+  currentPage: number;
+  totalItems: number;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -17,21 +33,77 @@ interface ProjectFilter {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Función (Query) que trae un array de múltiples proyectos desde la BD.
+ * Función (Query) que trae múltiples proyectos desde la BD con soporte para:
+ * - Búsqueda por query (título o descripción)
+ * - Paginación (page y pageSize)
+ * - Ordenamiento (asc/desc)
+ * - Filtrado por usuario (userId)
+ *
+ * Retorna un objeto con la lista de proyectos y metadatos de paginación.
  */
 export async function getProjects({
   order,
   userId,
-}: ProjectFilter): Promise<Project[]> {
-  console.log(`[getProjects] Obteniendo proyectos con orden: ${order}`);
+  query,
+  page = 1,
+  pageSize = 10,
+}: ProjectFilter): Promise<PaginatedProjectsResult> {
+  console.log(
+    `[getProjects] Obteniendo proyectos - query: ${query}, page: ${page}, pageSize: ${pageSize}`,
+  );
 
-  // prisma.project hace referencia a la tabla 'Project' en tu DB.
-  return prisma.project.findMany({
-    where: userId ? { userId } : undefined, // Filtrar por usuario solo si se proporciona
+  // ✅ Proteger page: debe ser número válido y >= 1
+  const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+
+  // ✅ Proteger pageSize: debe ser número válido y >= 1
+  const safePageSize = Number.isNaN(pageSize) || pageSize < 1 ? 10 : pageSize;
+
+  // Construir el filtro WHERE dinámicamente
+  const whereClause = {
+    ...(userId && { userId }), // Filtro por usuario si se proporciona
+    ...(query && {
+      // Búsqueda por título O descripción (usando OR)
+      OR: [
+        { title: { contains: query, mode: "insensitive" as const } },
+        { description: { contains: query, mode: "insensitive" as const } },
+      ],
+    }),
+  };
+
+  // Obtener el total de proyectos que cumplen los filtros
+  const totalItems = await prisma.project.count({
+    where: whereClause,
+  });
+
+  // Calcular el número total de páginas (nunca menor a 1)
+  const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
+
+  // ✅ Asegurar que la página actual no sea mayor que el total de páginas
+  const currentPage = Math.min(safePage, totalPages);
+
+  // Calcular el offset para la paginación
+  const skip = (currentPage - 1) * safePageSize;
+
+  // Obtener los proyectos de la página actual
+  const items = await prisma.project.findMany({
+    where: whereClause,
     orderBy: {
       createdAt: order, // 'asc' ordena viejos primero, 'desc' ordena nuevos primero
     },
+    skip, // Saltamos los primeros (currentPage - 1) * safePageSize registros
+    take: safePageSize, // Tomamos solo safePageSize registros
   });
+
+  console.log(
+    `[getProjects] ✅ Obtenidos ${items.length} proyectos de ${totalItems} totales (página ${currentPage}/${totalPages})`,
+  );
+
+  return {
+    items,
+    totalPages,
+    currentPage,
+    totalItems,
+  };
 }
 
 /**
